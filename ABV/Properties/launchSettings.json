@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ABV": {
+      "commandName": "Project",
+        "commandLineArgs": "cosmosid=0 server=http://www.daten-partner.de verzeichnis=D:\\Compart\\test\\abv\\in\\1 verarbeitung=dummy custom=dummy color=false"
+    }
+  }
+}
