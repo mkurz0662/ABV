@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="D:\Compart\Toolkit\2026-04\lib\cpNetLib.dll">
-      <HintPath>D:\Compart\Toolkit\2026-04\lib\cpNetLib.dll</HintPath>
+    <Reference Include="D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll">
+      <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll</HintPath>
     </Reference>
-    <Content Include="D:\Compart\Toolkit\2026-04\lib\cpNetC.dll">
-      <HintPath>D:\Compart\Toolkit\2026-04\lib\cpNetC.dll</HintPath>
+    <Content Include="D:\Compart\Toolkit\2026-09\lib\cpNetC.dll">
+      <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetC.dll</HintPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="C:\Users\michael.MKWIN02\RiderProjects\includes\**">
