@@ -36,7 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="TkUtils">
-      <HintPath>C:\Users\michael.MKWIN02\RiderProjects\TKUTILS\TkUtils\bin\Debug\net9.0\tkutils.dll</HintPath>
+      <HintPath>C:\Users\michael.MKWIN02\RiderProjects\TKUTILS\TkUtils\bin\Release\net9.0\tkutils.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -77,7 +77,7 @@ public class VorVerarbeitung
             }
 
             if (strPathDataInputarg == "")
-            {
+            {   
                 DPUtils.REST_POST(RESTPostStateTypes.Error, "Fehler Verzeichnis wurde nicht übergeben", "");
                 DPUtils.LogAdd("Verzeichnis nicht per Kommand-Parameter übergeben");
                 Environment.Exit(1);
@@ -248,6 +248,7 @@ public class VorVerarbeitung
 
                 page.SetPageSizeFormat(Page.Paperformat.A4, Page.Orientation.Portrait);
                 page.SetSimplexDuplex(Page.SimplexDuplex.Simplex);
+
 
                 if (isFirstPage || isZvv)
                 {
