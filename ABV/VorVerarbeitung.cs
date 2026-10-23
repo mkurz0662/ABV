@@ -272,7 +272,7 @@ public class VorVerarbeitung
                     if (!isZvv)
                     {
                         metaData = AbvDDL.ProcessAbv(DdlData);
-                        AdressData adressData = tkutils.CaptureAdr(page, "24mm", "57mm", "80mm", "35mm", 0,true,true,"B");
+                        AdressData adressData = tkutils.CaptureAdr(page, "24mm", "57mm", "80mm", "35mm", 0,false,true,"B");
                         mailpiece = new SpooldataMailpiece
                         {
                             adrLine1 = adressData.ADDRESSLINE1,
