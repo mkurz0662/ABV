@@ -226,7 +226,7 @@ public class VorVerarbeitung
         jsonWhitePool.mailpieces = new List<SpooldataMailpiece>();
         var mailpiece = new SpooldataMailpiece();
         var document = new SpooldataDocument();
-        AbvDDL metaData = null;
+        AbvDDL metaData;
         foreach ( String infile in listFiles)
         {
 
@@ -261,6 +261,8 @@ public class VorVerarbeitung
                         document.sheets =pageCountDocument;
                         document.pageto = intGlobalPageCounterOutput;
                         mailpiece.documents.Add(document);
+                   
+
                         jsonWhitePool.mailpieces.Add(mailpiece);
                         pageCountDocument = 0;
                       
@@ -284,7 +286,8 @@ public class VorVerarbeitung
                             street   = adressData.STREET,
                             city = adressData.CITY,
                             isocode = countries.CountryToIso2( metaData.COUNTRY),
-                            custdocid = metaData.DOCID,
+                            custdocid = Path.GetFileNameWithoutExtension(infile),
+                            dokumentId = metaData.DOCID,
                             zip = metaData.ZIP,
                             country = metaData.COUNTRY,
                             digitalcopy = false,
@@ -294,10 +297,10 @@ public class VorVerarbeitung
                             bundleid = metaData.DOCID //Guid.NewGuid().ToString()
                             
                         };
-                        if (!tempDic.ContainsKey(mailpiece.custdocid)) {
-                            tempDic.Add(mailpiece.custdocid,Guid.NewGuid().ToString());
+                        if (!tempDic.ContainsKey(mailpiece.dokumentId)) {
+                            tempDic.Add(mailpiece.dokumentId,Guid.NewGuid().ToString());
                         }
-                        mailpiece.bundleid = tempDic[mailpiece.custdocid];
+                        mailpiece.bundleid = tempDic[mailpiece.dokumentId];
                         document = new SpooldataDocument()
                         {
                             docclass = "ABV",
@@ -345,6 +348,7 @@ public class VorVerarbeitung
             document.sheets = pageCountDocument;
             document.pageto = intGlobalPageCounterOutput;
             mailpiece.documents.Add(document);
+            
             jsonWhitePool.mailpieces.Add(mailpiece);
             fi.Dispose();
         }

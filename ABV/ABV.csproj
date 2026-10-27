@@ -31,7 +31,7 @@
     </ItemGroup>
   <ItemGroup>
     <Reference Include="DPUtils">
-      <HintPath>C:\Users\michael.MKWIN02\RiderProjects\DPUtils\DPUtils\DPUtils\bin\Release\net9.0\DPUtils.dll</HintPath>
+      <HintPath>C:\Users\michael.MKWIN02\RiderProjects\DPUTILS\DPUtils\bin\Release\net9.0\dputils.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
