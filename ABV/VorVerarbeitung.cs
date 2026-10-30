@@ -378,23 +378,20 @@ public class VorVerarbeitung
 
     public void DataZIPAndCleanup(string strMandant)
     {
+
         var strTimestampGenerate = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var strZIPOutfilename = OUTPUTPATH + @"\" + strMandant + "_" + strTimestampGenerate + "_" + COSMOSID + ".7z";
+        var strZIPOutfilename =
+            Path.Combine(OUTPUTPATH, strMandant + "_" + strTimestampGenerate + "_" + COSMOSID + ".7z");
 
         DPUtils.Compress_7ZIP(strZIPOutfilename, OUTPUTPATH); //Alternative zu 7 ZIP
-
         File.Move(strZIPOutfilename,
             BASEOUTPUT + @"\" + Path.GetFileName(strZIPOutfilename));
-
-
+                       
+        DPUtils.DeleteAllFilesInDirectory(INPUTPATH,false);
         //Temp-Ordner löschen
-        new DirectoryInfo(OUTPUTPATH).Delete(true);
-
-
-        foreach (var strFilename in Directory.GetFiles(INPUTPATH)) File.Delete(strFilename);
-
+        DPUtils.DeleteAllFilesInDirectory(OUTPUTPATH,true);
+           
     }
-
     public void OuputPages(ArrayList arlPagesOut, FileOutputDocument outFile)
     {
         var pageNbr = 0;
