@@ -408,9 +408,9 @@
          <files path="/opt/Compart/res/icc" type="ICC" extension="icc" />
          <files path="/opt/Compart/res/pfb" type="Type1Font" extension="pfb" />
          <files path="/opt/Compart/res/ttf" type="TrueType" extension="ttf" />
-         <files path="E:/Compart/res/icc" type="ICC" extension="icc" />
-         <files path="E:/Compart/res/pfb" type="Type1Font" extension="pfb" />
-         <files path="E:/Compart/res/ttf" type="TrueType" extension="ttf" />
+         <files path="D:/Compart/res/icc" type="ICC" extension="icc" />
+         <files path="D:/Compart/res/pfb" type="Type1Font" extension="pfb" />
+         <files path="D:/Compart/res/ttf" type="TrueType" extension="ttf" />
          <files path="c:\WINDOWS\Fonts" type="TrueType" extension="ttf" />
 
       </fileslist>

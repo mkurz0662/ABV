@@ -10,25 +10,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll">
-      <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll</HintPath>
+  <Reference Include="D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll">
+    <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetLib.dll</HintPath>
+  </Reference>
+  <Content Include="D:\Compart\Toolkit\2026-09\lib\cpNetC.dll">
+    <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetC.dll</HintPath>
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+  <Content Include="C:\Users\michael.MKWIN02\RiderProjects\includes\**">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+  <Content Include="profile\**">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
+  <ItemGroup>
+    <Reference Include="SpooldataInterface">
+      <HintPath>C:\Users\michael.MKWIN02\RiderProjects\Sdi\SpooldataInterface\bin\Release\net9.0\SpooldataInterface.dll</HintPath>
     </Reference>
-    <Content Include="D:\Compart\Toolkit\2026-09\lib\cpNetC.dll">
-      <HintPath>D:\Compart\Toolkit\2026-09\lib\cpNetC.dll</HintPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="C:\Users\michael.MKWIN02\RiderProjects\includes\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="profile\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-      </ItemGroup>
-    <ItemGroup>
-        <Reference Include="SpooldataInterface">
-              <HintPath>C:\Users\michael.MKWIN02\RiderProjects\Sdi\SpooldataInterface\bin\Release\net9.0\SpooldataInterface.dll</HintPath>
-        </Reference>
-    </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="DPUtils">
       <HintPath>C:\Users\michael.MKWIN02\RiderProjects\DPUTILS\DPUtils\bin\Release\net9.0\dputils.dll</HintPath>

@@ -92,7 +92,8 @@
    <resourcelist>
       <fileslist>
          <files path="/opt/Compart/res/pfb" extension=""/>
-         <files path="E:/Compart/res/pfb" type="Type1Font" extension="pfb"/>
+         <files path="D:/Compart/res/pfb" type="Type1Font" extension="pfb"/>
+         <files path="D:/Compart/res/ttf" type="TrueType" extension="ttf"/>
          <files path="c:/windows/fonts" type="TrueType" extension="ttf"/>
          <files path="/opt/Compart/res/ttf" extension=""/>
       </fileslist>

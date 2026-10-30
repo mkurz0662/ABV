@@ -390,26 +390,9 @@ public class VorVerarbeitung
         //Temp-Ordner löschen
         new DirectoryInfo(OUTPUTPATH).Delete(true);
 
-        foreach (var strFilename in Directory.GetFiles(INPUTPATH))
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                DPUtils.LogAdd("Datei konnte nicht gelöscht werden " + strFilename + " " + ex.Message);
-            }
 
         foreach (var strFilename in Directory.GetFiles(INPUTPATH)) File.Delete(strFilename);
 
-        try
-        {
-            // System.IO.Directory.Delete(INPUTPATH, true);
-        }
-        catch (Exception ex)
-        {
-            //REST_POST(strRESTStatusError, "Fehler beim Löschen des Eingangsordners", "");
-            DPUtils.LogAdd("Ordner konnte nicht gelöscht werden " + INPUTPATH + " " + ex.Message);
-        }
     }
 
     public void OuputPages(ArrayList arlPagesOut, FileOutputDocument outFile)
@@ -456,3 +439,4 @@ public class AbvDDL
         return metaData;
     }
 }
+    
