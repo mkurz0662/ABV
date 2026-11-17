@@ -23,6 +23,9 @@
   <Content Include="profile\**">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
+    <Content Include="overlay\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>    
 </ItemGroup>
   <ItemGroup>
     <Reference Include="SpooldataInterface">

@@ -166,7 +166,7 @@ public class VorVerarbeitung
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ZIPData " + COSMOSID, "");
 
-            DataZIPAndCleanup(strMandant);
+            DataZipAndCleanup(strMandant);
 
             DPUtils.REST_POST(RESTPostStateTypes.ProcessEnd, "Preprocessing Fertig", BASEOUTPUT);
 
@@ -194,7 +194,19 @@ public class VorVerarbeitung
         outAttr.SetType("AFP");
         outAttr.SetSeparateOverlays(false);
         outAttr.SetBinaryCopyMode(OutputDocumentAttributes.BinaryCopyMode.Never);
-        
+         // ExternalItem ovlPage1 =
+         //     tkutils.SetOverlay(
+         //         Path.Combine(Environment.CurrentDirectory, "overlay", "PDFA_ABV_Rechnungen_20211108.pdf"), "ABV1", 1, 0,
+         //         "", "", true);
+         // ExternalItem ovlPageX =
+         //     tkutils.SetOverlay(
+         //         Path.Combine(Environment.CurrentDirectory, "overlay",
+         //             "PDFA_ABV_Rechnungen_ohneAbsenderzeile_20211108.pdf"), "ABV2", 1, 0, "", "", true);
+         // ExternalItem ovlZvv =
+         //     tkutils.SetOverlay(
+         //         Path.Combine(Environment.CurrentDirectory, "overlay", "PDFA_ABV_Rechnungen_ZVV_20211108.pdf"), "ABVZV",
+         //        1, 0, "", "", true);
+         // Length ovlPos = new Length(frame, "0mm");
  
        
         var tempDic = new Dictionary<string, string>();   
@@ -249,7 +261,9 @@ public class VorVerarbeitung
                 page.SetPageSizeFormat(Page.Paperformat.A4, Page.Orientation.Portrait);
                 page.SetSimplexDuplex(Page.SimplexDuplex.Simplex);
 
-
+                // if (isFirstPage) page.Put(ovlPage1,ovlPos,ovlPos);
+                // else if (!isZvv) page.Put(ovlPageX,ovlPos,ovlPos);
+                // else page.Put(ovlZvv,ovlPos,ovlPos);
                 if (isFirstPage || isZvv)
                 {
                     if (isFirstPage && intGlobalPageCounterOutput > 0 && arlPagesOut.Count > 0)
@@ -311,6 +325,7 @@ public class VorVerarbeitung
                             pagefrom = intGlobalPageCounterOutput
                             
                         };
+                        
                     }
                     else
                     {
@@ -330,6 +345,7 @@ public class VorVerarbeitung
                             perforation = true,
                             perftray = 10
                         };
+
                         pageCountDocument = 0;
                     }
                                         
@@ -357,6 +373,10 @@ public class VorVerarbeitung
         outFile.Dispose();
         inAttr.Dispose();
         outAttr.Dispose();
+         // ovlPos.Dispose();
+         // ovlZvv.Dispose();
+         // ovlPage1.Dispose();
+         // ovlPageX.Dispose();
         var options = new JsonSerializerOptions { WriteIndented = true };
         string strJSONInfo = JsonSerializer.Serialize(jsonWhitePool, options);
         if (jsonWhitePool.mailpieces.Count > 0)
@@ -376,7 +396,7 @@ public class VorVerarbeitung
         return listFiles;
     }
 
-    public void DataZIPAndCleanup(string strMandant)
+    public void DataZipAndCleanup(string strMandant)
     {
 
         var strTimestampGenerate = DateTime.Now.ToString("yyyyMMdd_HHmmss");
