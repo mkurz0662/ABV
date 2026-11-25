@@ -1,9 +1,5 @@
 ﻿using System.Collections;
 using System.Text;
-using System.Text.Json;
-using net.compart.cplib.docponent;
-using net.compart.cplib.docponenthelper;
-using Sdi;
 
 using Toolkit;
 using Utils;
@@ -11,30 +7,13 @@ using Path = System.IO.Path;namespace ABV;
 
 public class VorVerarbeitung
 {
-    private const string afpExtension = ".afp";
-    private const string jsonExtension = ".json";
     private const bool makeContainer = true;
-    public readonly Frame frame;
-
-    private SpooldataInterface jsonWhitePool = new SpooldataInterface()
-    {
-        filetype = "AFP",
-        spooltype = "ESTAMPING",
-        doctype = "A4",
-        docclass = "Briefe",
-        prodtype = "TEST",
-        mandant = "ABV",
-        iscutsheet = false,
-        usecostunit = true
-    };
-
-
-    //Compart Toolkit + Whitepooljason
-    private readonly TkUtils tkutils;
+    private const string strMandant = "ABV";
+    private string  ftMgrFile = string.Empty;
     private readonly string timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-    private readonly string strLogfile = Environment.CurrentDirectory + @"\" + "toolkit_";
-    private readonly string processLogfile = Environment.CurrentDirectory + @"\" + "preprocessing_";
-    private readonly string strICCGenericGray = Environment.CurrentDirectory + @"\" + "icc" + @"\" + "GenericGray.icc";
+    private readonly string strLogfile = Path.Combine(Environment.CurrentDirectory , "toolkit_");
+    private readonly string processLogfile = Path.Combine(Environment.CurrentDirectory,"preprocessing_");
+    private readonly string strICCGenericGray = Path.Combine(Environment.CurrentDirectory , "icc" , "GenericGray.icc");
 
 
     public string INPUTPATH { get; set; } = string.Empty;
@@ -45,12 +24,6 @@ public class VorVerarbeitung
     public string SERVER_RESTURL { get; set; } = string.Empty;
     public string SYSTEMTYPE { get; set; } = string.Empty;
 
-
-    //Pfade
-
-    private readonly string strToolkitProfilePath = Environment.CurrentDirectory + @"\profile\";
-
-    private readonly string strTyp = "BRIEFE";
 
 
     public VorVerarbeitung(string strCosmosIDarg, string strREST_URLarg, string strPathDataInputarg,
@@ -85,9 +58,9 @@ public class VorVerarbeitung
 
 
 
-            var ftMgrFile = Environment.CurrentDirectory + @"\ftmgr" + timestamp + ".xml";
-            tkutils = new TkUtils(strToolkitProfilePath, strLogfile + timestamp, ftMgrFile);
-            frame = tkutils.GetFrame();
+            ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
+            //tkutils = new TkUtils(strToolkitProfilePath, strLogfile + timestamp, ftMgrFile);
+            //frame = tkutils.GetFrame();
 
             if (strPathDataInputarg.EndsWith(@"\"))
                 strPathDataInputarg = strPathDataInputarg.Substring(0, strPathDataInputarg.Length - 1);
@@ -158,11 +131,15 @@ public class VorVerarbeitung
             var listAllInputFiles = GetAllInputFiles(INPUTPATH, "*.pdf");
             //DPUtils.LogAdd(listAllInputFiles.Count.ToString());
 
-            var strMandant = jsonWhitePool.mandant;
+            
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ProcessData " + COSMOSID, "");
-
-            ProcessData(listAllInputFiles, strMandant);
+            var ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
+            Process process = new Process(OUTPUTPATH, strLogfile,ftMgrFile,makeContainer);
+            process.ProcessData(listAllInputFiles, strMandant);
+            process.EndProcess();
+            
+           // ProcessData(listAllInputFiles, strMandant);
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ZIPData " + COSMOSID, "");
 
@@ -172,9 +149,9 @@ public class VorVerarbeitung
 
             DPUtils.LogAdd("Ende Preprocessing");
 
-            tkutils.closeTkUtils();
+            //tkutils.closeTkUtils();
 
-            frame.Dispose();
+            //frame.Dispose();
         }
         catch (Exception ex)
         {
@@ -183,208 +160,7 @@ public class VorVerarbeitung
         }
     }
 
-    public void ProcessData(List<string> listFiles, string strMandant)
-    {
-        var countries = new CountryUtil();
-        var inAttr = new InputDocumentAttributes(frame);
-        inAttr.SetType("PDF");
-
-        var outAttr = new OutputDocumentAttributes(frame);
-        outAttr.SetSelfContained(true);
-        outAttr.SetType("AFP");
-        outAttr.SetSeparateOverlays(false);
-        outAttr.SetBinaryCopyMode(OutputDocumentAttributes.BinaryCopyMode.Never);
-         // ExternalItem ovlPage1 =
-         //     tkutils.SetOverlay(
-         //         Path.Combine(Environment.CurrentDirectory, "overlay", "PDFA_ABV_Rechnungen_20211108.pdf"), "ABV1", 1, 0,
-         //         "", "", true);
-         // ExternalItem ovlPageX =
-         //     tkutils.SetOverlay(
-         //         Path.Combine(Environment.CurrentDirectory, "overlay",
-         //             "PDFA_ABV_Rechnungen_ohneAbsenderzeile_20211108.pdf"), "ABV2", 1, 0, "", "", true);
-         // ExternalItem ovlZvv =
-         //     tkutils.SetOverlay(
-         //         Path.Combine(Environment.CurrentDirectory, "overlay", "PDFA_ABV_Rechnungen_ZVV_20211108.pdf"), "ABVZV",
-         //        1, 0, "", "", true);
-         // Length ovlPos = new Length(frame, "0mm");
- 
-       
-        var tempDic = new Dictionary<string, string>();   
-        jsonWhitePool = new SpooldataInterface()
-        {
-            filetype = "AFP",
-            spooltype = "ESTAMPING",
-            doctype = "A4",
-            docclass = "Briefe",
-            prodtype = "TEST",
-            mandant = "ABV",
-            provider = "DPAG",
-            iscutsheet = false,
-            usecostunit = false,
-            enveloping = true,
-            estamping = true,
-            closeenvelope = true,
-            targetPrinter = "OC"
-        };
-        var fileUUID = Guid.NewGuid().ToString();
-        var outFilename =  strMandant + "_" + fileUUID + afpExtension;
-        var outputFilename = OUTPUTPATH + @"\" + outFilename;
-        var outFile = new FileOutputDocument(frame, outputFilename, outAttr);
-        var intGlobalPageCounterOutput = 0;
-
-
-        jsonWhitePool.prodtype = SYSTEMTYPE is "TEST" or "DEV" ? "TEST" : "PROD";
-        jsonWhitePool.docclass = strTyp;
-        jsonWhitePool.mailpieces = new List<SpooldataMailpiece>();
-        var mailpiece = new SpooldataMailpiece();
-        var document = new SpooldataDocument();
-        AbvDDL metaData;
-        foreach ( String infile in listFiles)
-        {
-
-            DPUtils.LogAdd("Verbeitete Datei:"+infile);
-            var fi = new FileInputDocument(frame, infile, inAttr);
-            var arlPagesOut = new ArrayList();
-            arlPagesOut.Clear();
-            var pageCountDocument = 0;
-            var pageCount = 0;
-            while (fi.HasPage(++pageCount))
-            {
-                if (pageCount % 500 == 0) DPUtils.LogAdd("Verbeitete Seiten:"+pageCount.ToString());
-                Page page = fi.GetPage(pageCount);
-                Boolean isZvv = false;
-                Boolean isFirstPage = true;
-                var DdlData = tkutils.CaptureText(page, "0mm", "0mm", "155mm", "10mm");
-                isFirstPage = !string.IsNullOrEmpty(DdlData) && DdlData.IndexOf("$$START$$") != -1;
-                isZvv = !string.IsNullOrEmpty(DdlData) && DdlData.IndexOf("ZAHLSCHEIN") != -1;
-
-                page.SetPageSizeFormat(Page.Paperformat.A4, Page.Orientation.Portrait);
-                page.SetSimplexDuplex(Page.SimplexDuplex.Simplex);
-
-                // if (isFirstPage) page.Put(ovlPage1,ovlPos,ovlPos);
-                // else if (!isZvv) page.Put(ovlPageX,ovlPos,ovlPos);
-                // else page.Put(ovlZvv,ovlPos,ovlPos);
-                if (isFirstPage || isZvv)
-                {
-                    if (isFirstPage && intGlobalPageCounterOutput > 0 && arlPagesOut.Count > 0)
-                    {
-                        OuputPages(arlPagesOut, outFile);
-                        arlPagesOut.Clear();
-                        mailpiece.internationalflag = "5001,false";
-                        document.pages = pageCountDocument;
-                        document.sheets =pageCountDocument;
-                        document.pageto = intGlobalPageCounterOutput;
-                        mailpiece.documents.Add(document);
-                   
-
-                        jsonWhitePool.mailpieces.Add(mailpiece);
-                        pageCountDocument = 0;
-                      
-                  
   
-                    }
-                    intGlobalPageCounterOutput++;
-
-                    if (!isZvv)
-                    {
-                        metaData = AbvDDL.ProcessAbv(DdlData);
-                        AdressData adressData = tkutils.CaptureAdr(page, "24mm", "57mm", "80mm", "35mm", 0,false,true,"B");
-                        mailpiece = new SpooldataMailpiece
-                        {
-                            adrLine1 = adressData.ADDRESSLINE1,
-                            adrLine2 = adressData.ADDRESSLINE2,
-                            adrLine3 = adressData.ADDRESSLINE3,
-                            adrLine4 = adressData.ADDRESSLINE4,
-                            adrLine5 = adressData.ADDRESSLINE5,
-                            adrLine6 = adressData.ADDRESSLINE6,
-                            street   = adressData.STREET,
-                            city = adressData.CITY,
-                            isocode = countries.CountryToIso2( metaData.COUNTRY),
-                            custdocid = Path.GetFileNameWithoutExtension(infile),
-                            dokumentId = metaData.DOCID,
-                            zip = metaData.ZIP,
-                            country = metaData.COUNTRY,
-                            digitalcopy = false,
-                            poolfilename =  outFilename,
-                            infilename = Path.GetFileName(infile),
-                            custfilename = Path.GetFileName(infile),
-                            bundleid = metaData.DOCID //Guid.NewGuid().ToString()
-                            
-                        };
-                        if (!tempDic.ContainsKey(mailpiece.dokumentId)) {
-                            tempDic.Add(mailpiece.dokumentId,Guid.NewGuid().ToString());
-                        }
-                        mailpiece.bundleid = tempDic[mailpiece.dokumentId];
-                        document = new SpooldataDocument()
-                        {
-                            docclass = "ABV",
-                            color = "4/0",
-                            plexmode = "SIMPLEX",
-                            isDuplex = false,
-                            orderinshipment = 1,
-                            pagefrom = intGlobalPageCounterOutput
-                            
-                        };
-                        
-                    }
-                    else
-                    {
-                        document.pages = pageCountDocument;
-                        document.sheets = pageCountDocument;
-                        document.pageto = intGlobalPageCounterOutput-1;
-                        mailpiece.documents.Add(document);
-                        document = new SpooldataDocument()
-                        {
-                            docclass = "ABV-ZAHLSCHEIN",
-                            color = "4/0",
-                            plexmode = "SIMPLEX",
-                            isDuplex = false,
-                            orderinshipment = 2,
-                            pagefrom = intGlobalPageCounterOutput,
-                            pageto  = intGlobalPageCounterOutput,
-                            perforation = true,
-                            perftray = 10
-                        };
-
-                        pageCountDocument = 0;
-                    }
-                                        
-                }
-                else
-                {
-                    document.pageto = ++intGlobalPageCounterOutput ;
-                }
-                arlPagesOut.Add(page.Clone());
-                pageCountDocument++;
-                page.Dispose();
-            }
-
-            OuputPages(arlPagesOut, outFile);
-            document.pages = pageCountDocument;
-            document.sheets = pageCountDocument;
-            document.pageto = intGlobalPageCounterOutput;
-            mailpiece.documents.Add(document);
-            
-            jsonWhitePool.mailpieces.Add(mailpiece);
-            fi.Dispose();
-        }
-
-        outFile.Close();
-        outFile.Dispose();
-        inAttr.Dispose();
-        outAttr.Dispose();
-         // ovlPos.Dispose();
-         // ovlZvv.Dispose();
-         // ovlPage1.Dispose();
-         // ovlPageX.Dispose();
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string strJSONInfo = JsonSerializer.Serialize(jsonWhitePool, options);
-        if (jsonWhitePool.mailpieces.Count > 0)
-        {
-            File.WriteAllText(outputFilename.Replace(afpExtension, jsonExtension), strJSONInfo);
-        }
-    }
-
 
     public List<string> GetAllInputFiles(string strInputPath, string searchPattern)
     {
@@ -412,48 +188,7 @@ public class VorVerarbeitung
         DPUtils.DeleteAllFilesInDirectory(OUTPUTPATH,true);
            
     }
-    public void OuputPages(ArrayList arlPagesOut, FileOutputDocument outFile)
-    {
-        var pageNbr = 0;
-        foreach (Page outPage in arlPagesOut)
-        {
-            ++pageNbr;
-
-            if (makeContainer)
-            {
-                var objPage = tkutils.MakeContainer(outPage, pageNbr);
-                outFile.Write(objPage);
-                objPage.Dispose();
-            }
-            else
-            {
-                outFile.Write(outPage);
-            }
-
-            outPage.Dispose();
-        }
-    }
+ 
 }
-public class AbvDDL
-{
-    public string? DDL { get; set; } = string.Empty;
-    public string? DOCID { get; set; } = string.Empty;
-    public string? ZIP { get; set; } = "00000";
-    public string? COUNTRY { get; set; } = string.Empty;
-    public string? COLOR { get; set; } = "4/0";
-    // $$START$$;RE01348148288;;;;;45134;;DEUTSCHLAND;;;;;7;;;;;;;;;;;;;;$$END$$
 
-    public static AbvDDL ProcessAbv(String ddlData)
-    {
-        var metaData = new AbvDDL();
-        var splitDDL = ddlData.Split(";");
-        metaData.DDL = ddlData.Trim();
-        metaData.DOCID = splitDDL[1].Trim();
-        metaData.ZIP = splitDDL[6].Trim();
-        metaData.COUNTRY = splitDDL[8].Trim();
-        
-
-        return metaData;
-    }
-}
     
