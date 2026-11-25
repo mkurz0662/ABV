@@ -114,7 +114,7 @@ public class VorVerarbeitung
         try
         {
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Unzip data " + COSMOSID, "");
-            var zipList = GetAllInputFiles(INPUTPATH, "*.zip");
+            var zipList = DPUtils.GetAllInputFiles(INPUTPATH, "*.zip");
             if (zipList.Count > 0)
             {
                 for (int intZIPFile = 0; intZIPFile < zipList.Count; intZIPFile++)
@@ -128,7 +128,7 @@ public class VorVerarbeitung
             }
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing GetShipments " + COSMOSID, "");
-            var listAllInputFiles = GetAllInputFiles(INPUTPATH, "*.pdf");
+            var listAllInputFiles = DPUtils.GetAllInputFiles(INPUTPATH, "*.pdf");
             //DPUtils.LogAdd(listAllInputFiles.Count.ToString());
 
             
@@ -138,20 +138,14 @@ public class VorVerarbeitung
             Process process = new Process(OUTPUTPATH, strLogfile,ftMgrFile,makeContainer);
             process.ProcessData(listAllInputFiles, strMandant);
             process.EndProcess();
-            
-           // ProcessData(listAllInputFiles, strMandant);
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ZIPData " + COSMOSID, "");
 
-            DataZipAndCleanup(strMandant);
-
+            DPUtils.DataZipAndCleanup(strMandant,OUTPUTPATH,BASEOUTPUT,INPUTPATH,COSMOSID);
             DPUtils.REST_POST(RESTPostStateTypes.ProcessEnd, "Preprocessing Fertig", BASEOUTPUT);
 
             DPUtils.LogAdd("Ende Preprocessing");
 
-            //tkutils.closeTkUtils();
-
-            //frame.Dispose();
         }
         catch (Exception ex)
         {
@@ -159,35 +153,8 @@ public class VorVerarbeitung
             DPUtils.REST_POST(RESTPostStateTypes.Error, "Fehler beim Preprozessing " + ex.Message, "");
         }
     }
+ 
 
-  
-
-    public List<string> GetAllInputFiles(string strInputPath, string searchPattern)
-    {
-        var fileArrayInput = Directory.GetFiles(strInputPath, searchPattern);
-        var listFiles = new List<string>();
-
-        foreach (var file in fileArrayInput) listFiles.Add(file);
-
-        return listFiles;
-    }
-
-    public void DataZipAndCleanup(string strMandant)
-    {
-
-        var strTimestampGenerate = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var strZIPOutfilename =
-            Path.Combine(OUTPUTPATH, strMandant + "_" + strTimestampGenerate + "_" + COSMOSID + ".7z");
-
-        DPUtils.Compress_7ZIP(strZIPOutfilename, OUTPUTPATH); //Alternative zu 7 ZIP
-        File.Move(strZIPOutfilename,
-            BASEOUTPUT + @"\" + Path.GetFileName(strZIPOutfilename));
-                       
-        DPUtils.DeleteAllFilesInDirectory(INPUTPATH,false);
-        //Temp-Ordner löschen
-        DPUtils.DeleteAllFilesInDirectory(OUTPUTPATH,true);
-           
-    }
  
 }
 
