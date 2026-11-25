@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Text.Json;
 using net.compart.cplib.docponent;
+using net.compart.cplib.docponenthelper;
 using Path = System.IO.Path;
 
 namespace ABV;
@@ -19,26 +20,27 @@ public class Process
     string ftMgrFile = string.Empty;
     string processLogFile = string.Empty;
     public readonly Frame frame;
-
-    public Process(string outputpath, string processLogFile, string ftMgrFile, bool makeContainer)
+ 
+    public Process(string outputpath, string preprocessLogFile, bool MakeContainer)
     {
         OUTPUTPATH = outputpath;
-        this.makeContainer = makeContainer;
-        this.processLogFile = processLogFile;
-        this.ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
+        makeContainer = MakeContainer;
+        processLogFile = preprocessLogFile;
+        ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
         tkutils = new TkUtils(Path.Combine(Environment.CurrentDirectory ,"profile"), Path.Combine(Environment.CurrentDirectory , "toolkit_" + timestamp), ftMgrFile);
         frame = tkutils.GetFrame();
-
-
     }
 
     public void EndProcess()
     {
+  
         tkutils.closeTkUtils();
         frame.Dispose();
+        File.Delete(ftMgrFile); 
     }
     public void ProcessData(List<string> listFiles, string strMandant)
     {
+      
         var countries = new CountryUtil();
         var inAttr = new InputDocumentAttributes(frame);
         inAttr.SetType("PDF");
@@ -68,15 +70,15 @@ public class Process
             closeenvelope = true,
             targetPrinter = "OC"
         };
-        var fileUUID = Guid.NewGuid().ToString();
-        var outFilename =  strMandant + "_" + fileUUID + AfpExtension;
-        var outputFilename = OUTPUTPATH + @"\" + outFilename;
+        var fileUuid = Guid.NewGuid().ToString();
+        var outFilename =  strMandant + "_" + fileUuid + AfpExtension;
+        var outputFilename = Path.Combine(OUTPUTPATH , outFilename);
         var outFile = new FileOutputDocument(frame, outputFilename, outAttr);
         var intGlobalPageCounterOutput = 0;
 
 
         jsonWhitePool.prodtype = "PROD";
-        jsonWhitePool.mailpieces = new List<SpooldataMailpiece>();
+        jsonWhitePool.mailpieces = [];
         var mailpiece = new SpooldataMailpiece();
         var document = new SpooldataDocument();
         AbvDDL metaData;
@@ -191,6 +193,7 @@ public class Process
                 {
                     document.pageto = ++intGlobalPageCounterOutput ;
                 }
+
                 arlPagesOut.Add(page.Clone());
                 pageCountDocument++;
                 page.Dispose();

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Text;
-
-using Toolkit;
+﻿using System.Text;
 using Utils;
 using Path = System.IO.Path;namespace ABV;
 
@@ -31,7 +28,7 @@ public class VorVerarbeitung
     {
         try
         {
-            DPUtils.strLogPath = processLogfile + timestamp + ".log";
+            DPUtils.strLogPath = processLogfile + timestamp +"_"+ strCosmosIDarg+ ".log";
             DPUtils.serverUrl = strREST_URLarg;
             DPUtils.cosmosid = strCosmosIDarg;
 
@@ -57,11 +54,6 @@ public class VorVerarbeitung
             }
 
 
-
-            ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
-            //tkutils = new TkUtils(strToolkitProfilePath, strLogfile + timestamp, ftMgrFile);
-            //frame = tkutils.GetFrame();
-
             if (strPathDataInputarg.EndsWith(@"\"))
                 strPathDataInputarg = strPathDataInputarg.Substring(0, strPathDataInputarg.Length - 1);
 
@@ -71,8 +63,8 @@ public class VorVerarbeitung
 
 
             Init();
-            RunToolkitABV();
-            File.Delete(ftMgrFile);
+            PreProcessing();
+            
         }
         catch (Exception ex)
         {
@@ -106,7 +98,7 @@ public class VorVerarbeitung
         }
     }
 
-    public void RunToolkitABV()
+    public void PreProcessing()
     {
         DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprocessing Ermittle Dateien " + COSMOSID, "");
 
@@ -129,15 +121,21 @@ public class VorVerarbeitung
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing GetShipments " + COSMOSID, "");
             var listAllInputFiles = DPUtils.GetAllInputFiles(INPUTPATH, "*.pdf");
-            //DPUtils.LogAdd(listAllInputFiles.Count.ToString());
-
-            
-
+           
+            //Process Toolkit 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ProcessData " + COSMOSID, "");
-            var ftMgrFile = Path.Combine(Environment.CurrentDirectory,"ftmgr" + timestamp + ".xml");
-            Process process = new Process(OUTPUTPATH, strLogfile,ftMgrFile,makeContainer);
+            try
+            {
+
+            Process process = new Process(OUTPUTPATH, strLogfile,makeContainer);
             process.ProcessData(listAllInputFiles, strMandant);
             process.EndProcess();
+            }
+            catch (Exception e)
+            {
+                DPUtils.LogAdd("Fehler Toolkit:" + e.Message);
+                throw;
+            }
 
             DPUtils.REST_POST(RESTPostStateTypes.Update, "Preprozessing ZIPData " + COSMOSID, "");
 
